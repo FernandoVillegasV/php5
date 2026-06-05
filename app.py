@@ -1,13 +1,8 @@
 from flask import Flask, render_template, request, session
-from pymongo import MongoClient
 import random
 
 app = Flask(__name__)
 app.secret_key = "clave-super-secreta"  # Necesaria para manejar sesiones
-
-client = MongoClient("mongodb://mongo:my_password@mongodb.railway.internal:27017/admin")
-db = client["adivinanzas"]
-coleccion = db["resultados"]
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -34,12 +29,6 @@ def index():
             else:
                 nombre = request.args.get("nombre", "")
                 mensaje = "¡Adivinaste! "+nombre+" lo lograste en " + str(session["veces"]) + " oportunidades. Se generó un nuevo número."
-                # Crea el conjunto de datos JSON
-                registro = {
-                    "nombre": nombre,
-                    "intentos": session["veces"]
-                }
-                coleccion.insert_one(registro)
                 
                 session["numero"] = random.randint(1, 100)
                 session["veces"] = 0
